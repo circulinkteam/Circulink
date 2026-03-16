@@ -285,7 +285,7 @@
   .chart-label { font-size: 0.8rem; color: rgba(245,240,232,0.65); width: 110px; flex-shrink: 0; }
   .chart-track { flex: 1; height: 12px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
   .chart-fill {
-    height: 50%; border-radius: 10px;
+    height: 100%; border-radius: 10px;
     animation: barGrow 1.8s cubic-bezier(0.4,0,0.2,1) both;
   }
   .chart-val { font-size: 0.8rem; font-weight: 600; color: var(--green-glow); width: 30px; }
