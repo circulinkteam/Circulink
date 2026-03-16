@@ -145,7 +145,7 @@
 
   h1 {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-size: clamp(2.8rem, 4vw, 5.5rem);
     font-weight: 800; line-height: 1.0;
     letter-spacing: -2px;
     animation: fadeSlideUp 0.7s 0.1s ease both;
@@ -285,7 +285,7 @@
   .chart-label { font-size: 0.8rem; color: rgba(245,240,232,0.65); width: 110px; flex-shrink: 0; }
   .chart-track { flex: 1; height: 12px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
   .chart-fill {
-    height: 100%; border-radius: 10px;
+    height: 50%; border-radius: 10px;
     animation: barGrow 1.8s cubic-bezier(0.4,0,0.2,1) both;
   }
   .chart-val { font-size: 0.8rem; font-weight: 600; color: var(--green-glow); width: 30px; }
