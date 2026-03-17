@@ -405,9 +405,70 @@
         <button class="btn-outline" style="width:100%;justify-content:center;margin-top:0.5rem;padding:0.7rem;">
           + Suggest an NGO Partner
         </button>
+        </div>
+      </div>
+    </div>
+  <div class="donation-upload-wrapper reveal" style="margin-top: 3rem;">
+  <div class="divider" style="margin-bottom: 2rem;"></div>
+  <div class="sell-form-card" style="max-width: 900px; margin: 0 auto; border: 1px solid rgba(245, 166, 35, 0.3);">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;">
+      <span style="font-size: 2rem;">🎁</span>
+      <h3 style="margin: 0;">Post a Community Donation</h3>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+      <div>
+        <div class="form-group">
+          <label>Donation Category</label>
+          <select id="donation-item-type">
+            <option value="">Select what you are donating...</option>
+            <option>Clothes (Wearable)</option>
+            <option>Blankets & Bedding</option>
+            <option>School Supplies & Books</option>
+            <option>Toys & Games</option>
+            <option>Medical Equipment</option>
+            <option>Dry Ration / Food Kits</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Upload Item Photos (AI Quality Check)</label>
+          <div class="upload-zone" onclick="document.getElementById('donation-file').click()" style="border-color: var(--amber);">
+            <div class="upload-zone-icon">📤</div>
+            <p>Click to upload donation images</p>
+          </div>
+          <input type="file" id="donation-file" hidden accept="image/*">
+        </div>
+      </div>
+
+      <div>
+        <div class="form-group">
+          <label>Item Condition</label>
+          <select>
+            <option>New / Unused</option>
+            <option>Gently Used (Excellent)</option>
+            <option>Used (Good Condition)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Pickup Location</label>
+          <input type="text" placeholder="Enter your area for NGO collection">
+        </div>
+
+        <div class="form-group">
+          <label>Special Instructions for NGO</label>
+          <textarea style="height: 80px;" placeholder="e.g., Please call before coming..."></textarea>
+        </div>
+
+        <button class="btn-primary" style="width:100%; background: var(--amber); color: #0e1111; font-weight: 700;">
+          Confirm Donation Post
+        </button>
       </div>
     </div>
   </div>
+</div>
+  
 </section>
 
 <!-- CONTACT & TEAM -->
