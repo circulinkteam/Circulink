@@ -6,6 +6,7 @@
 <title>CIRCULINK — AI-Powered Circular Waste Marketplace</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://js.braintreegateway.com/web/dropin/1.33.4/js/dropin.min.js"></script>
 </head>
 <body>
 
@@ -405,9 +406,10 @@
         <button class="btn-outline" style="width:100%;justify-content:center;margin-top:0.5rem;padding:0.7rem;">
           + Suggest an NGO Partner
         </button>
-        </div>
       </div>
     </div>
+  </div>
+
   <div class="donation-upload-wrapper reveal" style="margin-top: 3rem;">
   <div class="divider" style="margin-bottom: 2rem;"></div>
   <div class="sell-form-card" style="max-width: 900px; margin: 0 auto; border: 1px solid rgba(245, 166, 35, 0.3);">
@@ -460,15 +462,15 @@
           <label>Special Instructions for NGO</label>
           <textarea style="height: 80px;" placeholder="e.g., Please call before coming..."></textarea>
         </div>
-
-        <button class="btn-primary" style="width:100%; background: var(--amber); color: #0e1111; font-weight: 700;">
-          Confirm Donation Post
-        </button>
+        
+          <button class="btn-primary" style="width:100%; background: var(--amber); color: #0e1111; font-weight: 700;">
+            Confirm Donation Post
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-  
+
 </section>
 
 <!-- CONTACT & TEAM -->
@@ -589,6 +591,17 @@
     <h3 id="modal-title">Title</h3>
     <p id="modal-body">Body</p>
     <button class="btn-primary" style="width:100%;justify-content:center;" onclick="closeModal()">Continue</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal" style="max-width: 450px;">
+    <button class="modal-close" onclick="closePaymentModal()">✕</button>
+    <h3 style="margin-bottom: 1rem; color: var(--amber);">Secure Checkout</h3>
+    <div id="dropin-container"></div>
+    <button id="submit-button" class="btn-primary" style="width:100%; justify-content:center; margin-top:1.5rem;">
+      Complete Purchase →
+    </button>
   </div>
 </div>
 
