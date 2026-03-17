@@ -10,20 +10,83 @@ const listings = [
   { id:8, type:'Organic', name:'Vegetable Market Waste', qty:'300 kg', location:'Siwan', price:'₹2/kg', quality:'C', badge:'badge-organic' },
 ];
 
+// function renderListings(filter='all') {
+//   const grid = document.getElementById('listings-grid');
+//   const filtered = filter === 'all' ? listings : listings.filter(l => l.type === filter);
+//   grid.innerHTML = filtered.map(l => `
+//     <div class="listing-card" onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">
+//       <span class="listing-type-badge ${l.badge}">${l.type}</span>
+//       <h4>${l.name}</h4>
+//       <div class="listing-meta">${l.qty} · ${l.location} · Grade ${l.quality}</div>
+//       <div class="listing-footer">
+//         <div class="listing-price">${l.price}</div>
+//         <button class="listing-btn">Negotiate →</button>
+//       </div>
+//     </div>
+//   `).join('');
+// }
+
 function renderListings(filter='all') {
   const grid = document.getElementById('listings-grid');
   const filtered = filter === 'all' ? listings : listings.filter(l => l.type === filter);
+  
   grid.innerHTML = filtered.map(l => `
-    <div class="listing-card" onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">
-      <span class="listing-type-badge ${l.badge}">${l.type}</span>
-      <h4>${l.name}</h4>
-      <div class="listing-meta">${l.qty} · ${l.location} · Grade ${l.quality}</div>
-      <div class="listing-footer">
-        <div class="listing-price">${l.price}</div>
-        <button class="listing-btn">Negotiate →</button>
+    <div class="listing-card">
+      <div onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">
+        <span class="listing-type-badge ${l.badge}">${l.type}</span>
+        <h4>${l.name}</h4>
+        <div class="listing-meta">${l.qty} · ${l.location} · Grade ${l.quality}</div>
+        <div class="listing-price" style="margin-bottom:15px;">${l.price}</div>
+      </div>
+      <div class="listing-footer" style="display:flex; gap:10px;">
+        <button class="listing-btn" style="flex:1;" onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">Details</button>
+        <button class="listing-btn" style="flex:1; background:var(--amber); color:#000; border:none; font-weight:700;" 
+                onclick="initiatePayment('100', '${l.name}')">Buy Now</button>
       </div>
     </div>
   `).join('');
+}
+
+function initiatePayment(amount, itemName) {
+    const paymentModal = document.getElementById('payment-modal');
+    const container = document.getElementById('dropin-container');
+    
+    // 1. Show the modal
+    paymentModal.classList.add('active'); 
+    container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Loading Secure Payment Portal...</p>';
+
+    // 2. Fetch the token
+    fetch("/client-token")
+        .then(res => res.text())
+        .then(clientToken => {
+            // Initialize Braintree
+            braintree.dropin.create({
+                authorization: clientToken,
+                container: '#dropin-container'
+            }, function (err, instance) {
+                if (err) {
+                    console.error("Drop-in Error:", err);
+                    container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+                    return;
+                }
+
+                console.log("Braintree UI Ready!");
+
+                const submitBtn = document.getElementById("submit-button");
+                submitBtn.onclick = function () {
+                    instance.requestPaymentMethod(function (err, payload) {
+                        if (err) return console.error(err);
+                        
+                        // Send payload.nonce to your server
+                        alert("Success! Token generated: " + payload.nonce);
+                        // Here you would add: fetch('/checkout', { method: 'POST', body: ... })
+                    });
+                };
+            });
+        })
+        .catch(err => {
+            container.innerHTML = '<p style="color:red;">Failed to connect to server.</p>';
+        });
 }
 
 function filterListings(type, btn) {
@@ -105,61 +168,127 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ── DONATION PANEL LOGIC ──
+
+function openPaymentModal(amount, itemName) {
+    const modal = document.getElementById('payment-modal');
+    modal.classList.add('active'); // This triggers the CSS display: flex
+    
+    // Optional: Log to console to check if it's firing
+    console.log(`Opening payment for ${itemName}: ₹${amount}`);
+    
+    // Call your Braintree setup here...
+    // initiateBraintree(amount); 
+}
+
+function closePaymentModal() {
+    const modal = document.getElementById('payment-modal');
+    modal.classList.remove('active');
+}
 
 /**
- * Simulates AI quality check for donation items
- * Triggered when a user uploads an image in the donation section
+ * CIRCULINK - Donation Panel Logic
+ * Handles: Image Previews, AI Simulation, and Form Submission
  */
-document.getElementById('donation-file').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
 
-    const uploadZone = this.previousElementSibling;
-    const icon = uploadZone.querySelector('.upload-zone-icon');
-    const text = uploadZone.querySelector('p');
+// Function to handle the donation image upload and AI simulation
+const donationFileInput = document.getElementById('donation-file');
+if (donationFileInput) {
+    donationFileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const uploadZone = this.parentElement.querySelector('.upload-zone');
+            const uploadText = uploadZone.querySelector('p');
+            const uploadIcon = uploadZone.querySelector('.upload-zone-icon');
 
-    // Visual feedback for AI processing
-    icon.textContent = '🧠';
-    text.textContent = 'AI checking item quality...';
-    uploadZone.style.borderColor = 'var(--accent)';
+            // Visual feedback for AI Processing
+            uploadText.innerHTML = "<em>AI analyzing item quality...</em>";
+            uploadIcon.innerHTML = "⌛";
 
-    setTimeout(() => {
-        icon.textContent = '💎';
-        text.textContent = `Analysis Complete: ${file.name}`;
-        // We can show a small toast or update a hidden field with a quality score
-        console.log("AI Quality Check: Item matches 'Gently Used' criteria.");
-    }, 1500);
-});
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setTimeout(() => {
+                    // Simulate high-quality detection
+                    uploadIcon.innerHTML = "✨";
+                    uploadText.innerHTML = "<span style='color:#2db86e; font-weight:bold;'>AI Verified: High Quality</span>";
+                    
+                    // Optional: Show a tiny thumbnail in the icon area
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.height = "40px";
+                    img.style.borderRadius = "4px";
+                    uploadIcon.appendChild(img);
+                }, 1500);
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+}
 
-/**
- * Handles the submission of the donation form
- */
-function submitDonation() {
+// Function to handle the "Confirm Donation Post" button
+async function confirmDonation() {
+    // Select inputs based on your HTML structure
     const category = document.getElementById('donation-item-type').value;
-    const condition = document.querySelector('#social select:nth-of-type(2)').value;
-    const location = document.querySelector('#social input[type="text"]').value;
+    const conditionSelect = document.querySelectorAll('#social select')[1]; // Second select in social section
+    const locationInput = document.querySelector('input[placeholder="Enter your area for NGO collection"]');
+    const notesArea = document.querySelector('textarea[placeholder*="Please call before"]');
+    const donateBtn = document.querySelector('#social .btn-primary');
 
-    if (!category || !location) {
-        showModal('⚠️ Missing Information', 'Please select a category and provide a pickup location so our NGO partners can reach you.');
+    if (!category || !locationInput.value) {
+        alert("Please select a category and enter a pickup location.");
         return;
     }
 
-    // Logic for successful donation post
-    showModal(
-        '🎁 Donation Posted!', 
-        `Your donation of "${category}" has been listed. \n\n📍 Location: ${location}\n✨ Condition: ${condition}\n\nOur partner NGOs (like Goonj or HairCare Trust) have been notified. They will contact you within 48 hours to coordinate the pickup.`
-    );
+    // UI Loading State
+    const originalText = donateBtn.innerHTML;
+    donateBtn.innerText = "Posting to NGO Network...";
+    donateBtn.disabled = true;
 
-    // Optional: Reset form after submission
-    document.getElementById('donation-item-type').value = "";
-    document.querySelector('#social input[type="text"]').value = "";
-    document.querySelector('#social textarea').value = "";
+    // Data Preparation
+    const donationPayload = {
+        category: category,
+        condition: conditionSelect ? conditionSelect.value : "Good",
+        location: locationInput.value,
+        notes: notesArea ? notesArea.value : ""
+    };
+
+    console.log("Submitting Donation:", donationPayload);
+
+    try {
+        /* HACKATHON NOTE: If your backend is ready, use the fetch block below.
+           If not, the 'catch' block will handle the demo modal.
+        */
+        const response = await fetch('/api/donations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(donationPayload)
+        });
+
+        if (response.ok) {
+            openModal("Donation Successful", "Your items have been listed. Partner NGOs in your area will be notified for pickup.");
+            resetDonationForm();
+        } else {
+            throw new Error("Backend not connected");
+        }
+    } catch (error) {
+        // Demo Fallback: Shows success even if backend isn't live yet
+        setTimeout(() => {
+            openModal("Donation Posted (Demo)", "Success! In a live environment, this would notify Goonj or Soles4Souls based on your location.");
+            resetDonationForm();
+            donateBtn.innerHTML = originalText;
+            donateBtn.disabled = false;
+        }, 1000);
+    }
 }
 
-// Connect the button click to our new function
-// Find the "Confirm Donation Post" button and attach the event
-document.querySelector('#social .btn-primary[style*="background: var(--amber)"]').addEventListener('click', function(e) {
-    e.preventDefault();
-    submitDonation();
-});
+// Utility to clear form after submission
+function resetDonationForm() {
+    document.getElementById('donation-item-type').value = "";
+    document.querySelector('input[placeholder="Enter your area for NGO collection"]').value = "";
+    document.querySelector('textarea[placeholder*="Please call before"]').value = "";
+    const uploadZone = document.getElementById('donation-file').parentElement.querySelector('.upload-zone');
+    uploadZone.querySelector('p').innerText = "Click to upload donation images";
+    uploadZone.querySelector('.upload-zone-icon').innerText = "📤";
+}
+
+// Update your HTML button to trigger this:
+// Find your button and add: onclick="confirmDonation()"
+document.querySelector('#social .btn-primary').setAttribute('onclick', 'confirmDonation()');
