@@ -104,3 +104,112 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+
+/**
+ * CIRCULINK - Donation Panel Logic
+ * Handles: Image Previews, AI Simulation, and Form Submission
+ */
+
+// Function to handle the donation image upload and AI simulation
+const donationFileInput = document.getElementById('donation-file');
+if (donationFileInput) {
+    donationFileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const uploadZone = this.parentElement.querySelector('.upload-zone');
+            const uploadText = uploadZone.querySelector('p');
+            const uploadIcon = uploadZone.querySelector('.upload-zone-icon');
+
+            // Visual feedback for AI Processing
+            uploadText.innerHTML = "<em>AI analyzing item quality...</em>";
+            uploadIcon.innerHTML = "⌛";
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setTimeout(() => {
+                    // Simulate high-quality detection
+                    uploadIcon.innerHTML = "✨";
+                    uploadText.innerHTML = "<span style='color:#2db86e; font-weight:bold;'>AI Verified: High Quality</span>";
+                    
+                    // Optional: Show a tiny thumbnail in the icon area
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.height = "40px";
+                    img.style.borderRadius = "4px";
+                    uploadIcon.appendChild(img);
+                }, 1500);
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+}
+
+// Function to handle the "Confirm Donation Post" button
+async function confirmDonation() {
+    // Select inputs based on your HTML structure
+    const category = document.getElementById('donation-item-type').value;
+    const conditionSelect = document.querySelectorAll('#social select')[1]; // Second select in social section
+    const locationInput = document.querySelector('input[placeholder="Enter your area for NGO collection"]');
+    const notesArea = document.querySelector('textarea[placeholder*="Please call before"]');
+    const donateBtn = document.querySelector('#social .btn-primary');
+
+    if (!category || !locationInput.value) {
+        alert("Please select a category and enter a pickup location.");
+        return;
+    }
+
+    // UI Loading State
+    const originalText = donateBtn.innerHTML;
+    donateBtn.innerText = "Posting to NGO Network...";
+    donateBtn.disabled = true;
+
+    // Data Preparation
+    const donationPayload = {
+        category: category,
+        condition: conditionSelect ? conditionSelect.value : "Good",
+        location: locationInput.value,
+        notes: notesArea ? notesArea.value : ""
+    };
+
+    console.log("Submitting Donation:", donationPayload);
+
+    try {
+        /* HACKATHON NOTE: If your backend is ready, use the fetch block below.
+           If not, the 'catch' block will handle the demo modal.
+        */
+        const response = await fetch('/api/donations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(donationPayload)
+        });
+
+        if (response.ok) {
+            openModal("Donation Successful", "Your items have been listed. Partner NGOs in your area will be notified for pickup.");
+            resetDonationForm();
+        } else {
+            throw new Error("Backend not connected");
+        }
+    } catch (error) {
+        // Demo Fallback: Shows success even if backend isn't live yet
+        setTimeout(() => {
+            openModal("Donation Posted (Demo)", "Success! In a live environment, this would notify Goonj or Soles4Souls based on your location.");
+            resetDonationForm();
+            donateBtn.innerHTML = originalText;
+            donateBtn.disabled = false;
+        }, 1000);
+    }
+}
+
+// Utility to clear form after submission
+function resetDonationForm() {
+    document.getElementById('donation-item-type').value = "";
+    document.querySelector('input[placeholder="Enter your area for NGO collection"]').value = "";
+    document.querySelector('textarea[placeholder*="Please call before"]').value = "";
+    const uploadZone = document.getElementById('donation-file').parentElement.querySelector('.upload-zone');
+    uploadZone.querySelector('p').innerText = "Click to upload donation images";
+    uploadZone.querySelector('.upload-zone-icon').innerText = "📤";
+}
+
+// Update your HTML button to trigger this:
+// Find your button and add: onclick="confirmDonation()"
+document.querySelector('#social .btn-primary').setAttribute('onclick', 'confirmDonation()');
