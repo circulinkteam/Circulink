@@ -104,3 +104,62 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── DONATION PANEL LOGIC ──
+
+/**
+ * Simulates AI quality check for donation items
+ * Triggered when a user uploads an image in the donation section
+ */
+document.getElementById('donation-file').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+
+    const uploadZone = this.previousElementSibling;
+    const icon = uploadZone.querySelector('.upload-zone-icon');
+    const text = uploadZone.querySelector('p');
+
+    // Visual feedback for AI processing
+    icon.textContent = '🧠';
+    text.textContent = 'AI checking item quality...';
+    uploadZone.style.borderColor = 'var(--accent)';
+
+    setTimeout(() => {
+        icon.textContent = '💎';
+        text.textContent = `Analysis Complete: ${file.name}`;
+        // We can show a small toast or update a hidden field with a quality score
+        console.log("AI Quality Check: Item matches 'Gently Used' criteria.");
+    }, 1500);
+});
+
+/**
+ * Handles the submission of the donation form
+ */
+function submitDonation() {
+    const category = document.getElementById('donation-item-type').value;
+    const condition = document.querySelector('#social select:nth-of-type(2)').value;
+    const location = document.querySelector('#social input[type="text"]').value;
+
+    if (!category || !location) {
+        showModal('⚠️ Missing Information', 'Please select a category and provide a pickup location so our NGO partners can reach you.');
+        return;
+    }
+
+    // Logic for successful donation post
+    showModal(
+        '🎁 Donation Posted!', 
+        `Your donation of "${category}" has been listed. \n\n📍 Location: ${location}\n✨ Condition: ${condition}\n\nOur partner NGOs (like Goonj or HairCare Trust) have been notified. They will contact you within 48 hours to coordinate the pickup.`
+    );
+
+    // Optional: Reset form after submission
+    document.getElementById('donation-item-type').value = "";
+    document.querySelector('#social input[type="text"]').value = "";
+    document.querySelector('#social textarea').value = "";
+}
+
+// Connect the button click to our new function
+// Find the "Confirm Donation Post" button and attach the event
+document.querySelector('#social .btn-primary[style*="background: var(--amber)"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    submitDonation();
+});
