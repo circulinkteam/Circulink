@@ -1,13 +1,13 @@
 // ── LISTINGS DATA ──
 const listings = [
   { id:1, type:'Plastic', name:'PET Bottle Scrap', qty:'120 kg', location:'Siwan, Bihar', price:'₹18/kg', quality:'A', badge:'badge-plastic' },
-  { id:2, type:'Metal', name:'Iron Scrap Pieces', qty:'80 kg', location:'Patna, Bihar', price:'₹32/kg', quality:'B', badge:'badge-metal' },
+  { id:2, type:'Metal', name:'Iron Scrap Pieces', qty:'80 kg', location:'Siwan, Bihar', price:'₹32/kg', quality:'B', badge:'badge-metal' },
   { id:3, type:'Paper', name:'Corrugated Cardboard', qty:'200 kg', location:'Siwan, Bihar', price:'₹8/kg', quality:'A', badge:'badge-paper' },
-  { id:4, type:'Organic', name:'Food Waste (Compostable)', qty:'50 kg', location:'Gaya, Bihar', price:'₹4/kg', quality:'B', badge:'badge-organic' },
-  { id:5, type:'Plastic', name:'HDPE Container Scrap', qty:'60 kg', location:'Muzaffarpur', price:'₹22/kg', quality:'A', badge:'badge-plastic' },
-  { id:6, type:'Metal', name:'Copper Wire Waste', qty:'15 kg', location:'Patna, Bihar', price:'₹420/kg', quality:'A+', badge:'badge-metal' },
+  { id:4, type:'Organic', name:'Food Waste (Compostable)', qty:'50 kg', location:'Siwan, Bihar', price:'₹4/kg', quality:'B', badge:'badge-organic' },
+  { id:5, type:'Plastic', name:'HDPE Container Scrap', qty:'60 kg', location:'Siwan', price:'₹22/kg', quality:'A', badge:'badge-plastic' },
+  { id:6, type:'Metal', name:'Copper Wire Waste', qty:'15 kg', location:'Siwan, Bihar', price:'₹420/kg', quality:'A+', badge:'badge-metal' },
   { id:7, type:'Paper', name:'Office Paper Waste', qty:'90 kg', location:'Siwan, Bihar', price:'₹10/kg', quality:'A', badge:'badge-paper' },
-  { id:8, type:'Organic', name:'Vegetable Market Waste', qty:'300 kg', location:'Danapur', price:'₹2/kg', quality:'C', badge:'badge-organic' },
+  { id:8, type:'Organic', name:'Vegetable Market Waste', qty:'300 kg', location:'Siwan', price:'₹2/kg', quality:'C', badge:'badge-organic' },
 ];
 
 function renderListings(filter='all') {
