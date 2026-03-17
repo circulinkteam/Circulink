@@ -10,83 +10,20 @@ const listings = [
   { id:8, type:'Organic', name:'Vegetable Market Waste', qty:'300 kg', location:'Siwan', price:'₹2/kg', quality:'C', badge:'badge-organic' },
 ];
 
-// function renderListings(filter='all') {
-//   const grid = document.getElementById('listings-grid');
-//   const filtered = filter === 'all' ? listings : listings.filter(l => l.type === filter);
-//   grid.innerHTML = filtered.map(l => `
-//     <div class="listing-card" onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">
-//       <span class="listing-type-badge ${l.badge}">${l.type}</span>
-//       <h4>${l.name}</h4>
-//       <div class="listing-meta">${l.qty} · ${l.location} · Grade ${l.quality}</div>
-//       <div class="listing-footer">
-//         <div class="listing-price">${l.price}</div>
-//         <button class="listing-btn">Negotiate →</button>
-//       </div>
-//     </div>
-//   `).join('');
-// }
-
 function renderListings(filter='all') {
   const grid = document.getElementById('listings-grid');
   const filtered = filter === 'all' ? listings : listings.filter(l => l.type === filter);
-  
   grid.innerHTML = filtered.map(l => `
-    <div class="listing-card">
-      <div onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">
-        <span class="listing-type-badge ${l.badge}">${l.type}</span>
-        <h4>${l.name}</h4>
-        <div class="listing-meta">${l.qty} · ${l.location} · Grade ${l.quality}</div>
-        <div class="listing-price" style="margin-bottom:15px;">${l.price}</div>
-      </div>
-      <div class="listing-footer" style="display:flex; gap:10px;">
-        <button class="listing-btn" style="flex:1;" onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">Details</button>
-        <button class="listing-btn" style="flex:1; background:var(--amber); color:#000; border:none; font-weight:700;" 
-                onclick="initiatePayment('100', '${l.name}')">Buy Now</button>
+    <div class="listing-card" onclick="openListing('${l.name}','${l.price}','${l.qty}','${l.location}','${l.quality}')">
+      <span class="listing-type-badge ${l.badge}">${l.type}</span>
+      <h4>${l.name}</h4>
+      <div class="listing-meta">${l.qty} · ${l.location} · Grade ${l.quality}</div>
+      <div class="listing-footer">
+        <div class="listing-price">${l.price}</div>
+        <button class="listing-btn">Negotiate →</button>
       </div>
     </div>
   `).join('');
-}
-
-function initiatePayment(amount, itemName) {
-    const paymentModal = document.getElementById('payment-modal');
-    const container = document.getElementById('dropin-container');
-    
-    // 1. Show the modal
-    paymentModal.classList.add('active'); 
-    container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Loading Secure Payment Portal...</p>';
-
-    // 2. Fetch the token
-    fetch("/client-token")
-        .then(res => res.text())
-        .then(clientToken => {
-            // Initialize Braintree
-            braintree.dropin.create({
-                authorization: clientToken,
-                container: '#dropin-container'
-            }, function (err, instance) {
-                if (err) {
-                    console.error("Drop-in Error:", err);
-                    container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
-                    return;
-                }
-
-                console.log("Braintree UI Ready!");
-
-                const submitBtn = document.getElementById("submit-button");
-                submitBtn.onclick = function () {
-                    instance.requestPaymentMethod(function (err, payload) {
-                        if (err) return console.error(err);
-                        
-                        // Send payload.nonce to your server
-                        alert("Success! Token generated: " + payload.nonce);
-                        // Here you would add: fetch('/checkout', { method: 'POST', body: ... })
-                    });
-                };
-            });
-        })
-        .catch(err => {
-            container.innerHTML = '<p style="color:red;">Failed to connect to server.</p>';
-        });
 }
 
 function filterListings(type, btn) {
@@ -168,22 +105,6 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-
-function openPaymentModal(amount, itemName) {
-    const modal = document.getElementById('payment-modal');
-    modal.classList.add('active'); // This triggers the CSS display: flex
-    
-    // Optional: Log to console to check if it's firing
-    console.log(`Opening payment for ${itemName}: ₹${amount}`);
-    
-    // Call your Braintree setup here...
-    // initiateBraintree(amount); 
-}
-
-function closePaymentModal() {
-    const modal = document.getElementById('payment-modal');
-    modal.classList.remove('active');
-}
 
 /**
  * CIRCULINK - Donation Panel Logic
