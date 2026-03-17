@@ -591,3 +591,25 @@
     .impact-cards, .ai-detail-grid { grid-template-columns: 1fr; }
     .hero-stats { gap: 1.5rem; }
   }
+
+
+/* ADD TO YOUR CSS FILE */
+.donation-upload-wrapper {
+  width: 100%;
+  padding: 0 5%;
+}
+
+.donation-upload-wrapper .sell-form-card {
+  background: rgba(245, 166, 35, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.donation-upload-wrapper .sell-form-card:hover {
+  transform: translateY(-5px);
+  background: rgba(245, 166, 35, 0.08);
+}
+
+.donation-upload-wrapper .upload-zone:hover {
+  background: rgba(245, 166, 35, 0.1);
+  border-style: solid;
+}
